@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>AssociateServiceImpl.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">AssociateManagementApp</a> &gt; <a href="index.source.html" class="el_package">com.epam.associatemanagementapp.service</a> &gt; <span class="el_source">AssociateServiceImpl.java</span></div><h1>AssociateServiceImpl.java</h1><pre class="source lang-java linenums">package com.epam.associatemanagementapp.service;
+
+import java.util.List;
+import java.util.Optional;
+
+import org.modelmapper.ModelMapper;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import com.epam.associatemanagementapp.dtos.AssociateDTO;
+import com.epam.associatemanagementapp.entites.Associate;
+import com.epam.associatemanagementapp.entites.Batch;
+import com.epam.associatemanagementapp.exceptions.AssociateException;
+import com.epam.associatemanagementapp.repository.AssociateRepo;
+import com.epam.associatemanagementapp.repository.BatchRepo;
+
+@Service
+<span class="fc" id="L18">public class AssociateServiceImpl implements AssociateService{</span>
+	
+	@Autowired
+	AssociateRepo associateRepo;
+	@Autowired
+	BatchRepo batchRepo;
+	@Autowired
+	ModelMapper mapper;
+
+	@Override
+	public AssociateDTO addAssociate(AssociateDTO associateDto) {
+<span class="fc" id="L29">		Optional&lt;Batch&gt; batch=batchRepo.findById(associateDto.getBatch().getId());</span>
+<span class="fc" id="L30">		Associate associate=mapper.map(associateDto, Associate.class);</span>
+<span class="fc bfc" id="L31" title="All 2 branches covered.">		if(batch.isPresent()) {</span>
+<span class="fc" id="L32">			associateRepo.save(associate);	</span>
+		}
+		else {
+<span class="fc" id="L35">			batchRepo.save(mapper.map(associateDto.getBatch(),Batch.class));</span>
+<span class="fc" id="L36">			associateRepo.save(associate);</span>
+		}
+<span class="fc" id="L38">		return associateDto;</span>
+	}
+
+	@Override
+	public void deleteAssociate(int id) {
+<span class="fc" id="L43">		associateRepo.deleteById(id);	</span>
+<span class="fc" id="L44">	}</span>
+
+	@Override
+	public AssociateDTO updateAssociate(AssociateDTO associateDto) {
+<span class="fc bfc" id="L48" title="All 2 branches covered.">		if(associateRepo.existsById(associateDto.getId())) {</span>
+<span class="fc" id="L49">		 associateRepo.save(mapper.map(associateDto, Associate.class));</span>
+<span class="fc" id="L50">		return associateDto;</span>
+		}
+<span class="fc" id="L52">		else throw(new AssociateException(&quot;associate with this id is not present&quot;));</span>
+	}
+
+
+	@Override
+	public List&lt;AssociateDTO&gt; getAssociatesByGender(String gender) {
+		
+<span class="fc" id="L59">		return associateRepo.findAllByGender(gender).stream().map(associate-&gt;mapper.map(associate,AssociateDTO.class)).toList();</span>
+	}
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>
